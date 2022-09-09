@@ -1,3 +1,6 @@
+const validProductName = "ProdutoX"
+const invalidProductName = "Pro"
+
 const correctReturnProducts = [
   {
     id: 1,
@@ -14,5 +17,7 @@ const correctReturnProducts = [
 ];
 
 module.exports = {
+  validProductName,
+  invalidProductName,
   correctReturnProducts,
 };

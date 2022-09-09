@@ -19,9 +19,11 @@ const getById = async (req, res) => {
 const insert = async (req, res) => {
   const { name } = req.body;
 
-  const insertId = await productsService.insert(name);
+  const { type, message } = await productsService.insert(name);
 
-  return res.status(201).json({ id: insertId, name });
+  if (type) return res.status(422).json({ message });
+
+  return res.status(201).json({ id: message, name });
 };
 
 module.exports = {

@@ -8,7 +8,9 @@ const { salesController } = require("../../../src/controllers");
 const {
   returnInvalidQuantity,
   returnInvalidProductId,
-  returnSucess,
+  returnSucessPost,
+  returnSucessGet,
+  returnSucessGetById,
 } = require("../mocks/sales.mock");
 
 const { expect } = chai;
@@ -131,7 +133,68 @@ describe("Testes de unidade da camada controller de vendas", function () {
       await salesController.insert(req, res);
 
       expect(res.status).to.have.been.calledWith(201);
-      expect(res.json).to.have.been.calledWith(returnSucess);
+      expect(res.json).to.have.been.calledWith(returnSucessPost);
+    });
+  });
+
+  describe("Testando rotas GET", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se é possível listar todas as vendas", async function () {
+      const res = {};
+      const req = {};
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(salesService, "getAll").resolves(returnSucessGet);
+
+      await salesController.getAll(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(returnSucessGet);
+    });
+
+    it("Testa se é possível listar uma venda pelo seu id", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(salesService, "getById")
+        .resolves({ type: null, message: returnSucessGetById });
+
+      await salesController.getById(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(returnSucessGetById);
+    });
+
+    it("Testa se ao procurar por um id que não existe é retornado um erro", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 99,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(salesService, "getById")
+        .resolves({ type: "SALE_NOT_FOUND", message: "Sale not found" });
+
+      await salesController.getById(req, res);
+
+      expect(res.status).to.have.been.calledWith(404);
+      expect(res.json).to.have.been.calledWith({ message: "Sale not found" });
     });
   });
 });

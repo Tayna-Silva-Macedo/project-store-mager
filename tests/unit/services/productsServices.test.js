@@ -65,4 +65,36 @@ describe("Testes de unidade da camada service de produtos", function () {
       });
     });
   });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se a tabela não é atualizada caso o novo nome tenha menos de 5 letras", async function () {
+      const result = await productsService.update("Prod", 3);
+
+      expect(result).to.be.deep.equal({
+        type: "INVALID_VALUE",
+        message: '"name" length must be at least 5 characters long',
+      });
+    });
+
+    it("Testa se a tabela não é atualizada caso o id não exista", async function () {
+      sinon.stub(productsModel, "update").resolves(0);
+
+      const result = await productsService.update("ProdutoX", 3);
+
+      expect(result).to.be.deep.equal({
+        type: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
+    });
+
+    it("Testa se é possível atualizar um produto com sucesso", async function () {
+      sinon.stub(productsModel, "update").resolves(1);
+
+      const result = await productsService.update("ProdutoX", 3);
+
+      expect(result).to.be.deep.equal({ type: null, message: "" });
+    });
+  });
 });

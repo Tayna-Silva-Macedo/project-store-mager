@@ -129,4 +129,88 @@ describe("Testes de unidade da camada controller de produtos", function () {
       });
     });
   });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se a tabela não é atualizada caso o novo nome tenha menos de 5 letras", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: {
+          name: invalidProductName,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(productsService, "update").resolves({
+        type: "INVALID_VALUE",
+        message: '"name" length must be at least 5 characters long',
+      });
+
+      await productsController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(422);
+      expect(res.json).to.have.been.calledWith({
+        message: '"name" length must be at least 5 characters long',
+      });
+    });
+
+    it("Testa se a tabela não é atualizada caso o id não exista", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 99,
+        },
+        body: {
+          name: validProductName,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(productsService, "update")
+        .resolves({ type: "PRODUCT_NOT_FOUND", message: "Product not found" });
+
+      await productsController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(404);
+      expect(res.json).to.have.been.calledWith({
+        message: "Product not found",
+      });
+    });
+
+    it("Testa se é possível atualizar um produto com sucesso", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: {
+          name: validProductName,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(productsService, "update")
+        .resolves({ type: null, message: "" });
+
+      await productsController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith({
+        id: 1,
+        name: validProductName,
+      });
+    });
+  });
 });

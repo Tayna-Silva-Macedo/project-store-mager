@@ -37,13 +37,33 @@ describe("Testes de unidade da camada model de produtos", function () {
 
   describe("Testando rota POST", function () {
     afterEach(sinon.restore);
-    
+
     it("Testa se é possível cadastrar um produto com sucesso", async function () {
       sinon.stub(connection, "execute").resolves([{ insertId: 5 }]);
 
       const result = await productsModel.insert();
 
       expect(result).to.be.equal(5);
+    });
+  });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se é possível atualizar um produto com sucesso", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 1 }]);
+
+      const result = await productsModel.update("ProdutoX", 9);
+
+      expect(result).to.be.equal(1);
+    });
+
+    it("Testa se a tabela não é atualizada caso o id não exista", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 0 }]);
+
+      const result = await productsModel.update("ProdutoX", 99);
+
+      expect(result).to.be.equal(0);
     });
   });
 });

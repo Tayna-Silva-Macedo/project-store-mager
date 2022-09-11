@@ -41,8 +41,17 @@ const getById = async (id) => {
   return { type: null, message: result };
 };
 
+const destroy = async (id) => {
+  const affectedRows = await salesModel.destroy(id);
+
+  if (affectedRows === 0) return { type: 'SALE_NOT_FOUND', message: 'Sale not found' };
+
+  return { type: null, message: '' };
+};
+
 module.exports = {
   insert,
   getAll,
   getById,
+  destroy,
 };

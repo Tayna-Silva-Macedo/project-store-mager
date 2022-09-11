@@ -42,12 +42,22 @@ const getById = async (id) => {
       ORDER BY SP.sale_id , SP.product_id`,
     [id],
   );
-  
+
   return result;
+};
+
+const destroy = async (id) => {
+  const [{ affectedRows }] = await connection.execute(
+    'DELETE FROM StoreManager.sales WHERE id = ?',
+    [id],
+  );
+
+  return affectedRows;
 };
 
 module.exports = {
   insertSalesProducts,
   getAll,
   getById,
+  destroy,
 };

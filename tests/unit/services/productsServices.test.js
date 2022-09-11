@@ -97,4 +97,27 @@ describe("Testes de unidade da camada service de produtos", function () {
       expect(result).to.be.deep.equal({ type: null, message: "" });
     });
   });
+
+  describe("Testando rota DELETE", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível deletar um produto que não existe", async function () {
+      sinon.stub(productsModel, "destroy").resolves(0);
+
+      const result = await productsService.destroy(99);
+
+      expect(result).to.be.deep.equal({
+        type: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
+    });
+
+    it("Testa se é possível deletar um produto com sucesso", async function () {
+      sinon.stub(productsModel, "destroy").resolves(1);
+
+      const result = await productsService.destroy(2);
+
+      expect(result).to.be.deep.equal({ type: null, message: "" });
+    });
+  });
 });

@@ -42,8 +42,6 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
   const { id } = req.params;
 
-  console.log(id);
-
   const { type, message } = await productsService.destroy(id);
 
   if (type) return res.status(404).json({ message });

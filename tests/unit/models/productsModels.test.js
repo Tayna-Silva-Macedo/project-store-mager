@@ -66,4 +66,24 @@ describe("Testes de unidade da camada model de produtos", function () {
       expect(result).to.be.equal(0);
     });
   });
+
+  describe("Testando rota DELETE", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível deletar um produto que não existe", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 0 }]);
+
+      const result = await productsModel.destroy(99);
+
+      expect(result).to.be.equal(0);
+    });
+
+    it("Testa se é possível deletar um produto com sucesso", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 1 }]);
+
+      const result = await productsModel.destroy(2);
+
+      expect(result).to.be.equal(1);
+    });
+  });
 });

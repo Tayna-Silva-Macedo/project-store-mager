@@ -213,4 +213,51 @@ describe("Testes de unidade da camada controller de produtos", function () {
       });
     });
   });
+
+  describe("Testando rota DELETE", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível deletar um produto que não existe", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 99,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(productsService, "destroy")
+        .resolves({ type: "PRODUCT_NOT_FOUND", message: "Product not found" });
+
+      await productsController.destroy(req, res);
+
+      expect(res.status).to.have.been.calledWith(404);
+      expect(res.json).to.have.been.calledWith({
+        message: "Product not found",
+      });
+    });
+
+    it("Testa se é possível deletar um produto com sucesso", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 2,
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.end = sinon.stub().returns();
+
+      sinon
+        .stub(productsService, "destroy")
+        .resolves({ type: null, message: "" });
+
+      await productsController.destroy(req, res);
+
+      expect(res.status).to.have.been.calledWith(204);
+    });
+  });
 });

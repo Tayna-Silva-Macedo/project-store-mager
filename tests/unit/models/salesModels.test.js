@@ -55,4 +55,24 @@ describe("Testes de unidade da camada model de vendas", function () {
       expect(result).to.be.deep.equal([]);
     });
   });
+
+  describe("Testando rota DELETE", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível deletar uma venda que não existe", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 0 }]);
+
+      const result = await salesModel.destroy(99);
+
+      expect(result).to.be.equal(0);
+    });
+
+    it("Testa se é possível deletar uma venda com sucesso", async function () {
+      sinon.stub(connection, "execute").resolves([{ affectedRows: 1 }]);
+
+      const result = await salesModel.destroy(1);
+
+      expect(result).to.be.equal(1);
+    });
+  });
 });

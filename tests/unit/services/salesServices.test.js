@@ -118,4 +118,27 @@ describe("Testes de unidade da camada service de vendas", function () {
       });
     });
   });
+
+  describe("Testando rota DELETE", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível deletar uma venda que não existe", async function () {
+      sinon.stub(salesModel, "destroy").returns(0);
+
+      const result = await salesService.destroy(99);
+
+      expect(result).to.be.deep.equal({
+        type: "SALE_NOT_FOUND",
+        message: "Sale not found",
+      });
+    });
+
+    it("Testa se é possível deletar uma venda com sucesso", async function () {
+      sinon.stub(salesModel, "destroy").returns(1);
+
+      const result = await salesService.destroy(1);
+
+      expect(result).to.be.deep.equal({ type: null, message: "" });
+    });
+  });
 });

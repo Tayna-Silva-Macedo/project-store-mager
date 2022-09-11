@@ -13,7 +13,9 @@ const getAll = async () => {
 const getById = async (id) => {
   const result = await productsModel.getById(id);
 
-  if (!result) { return { type: 'PRODUCT_NOT_FOUND', message: 'Product not found' }; }
+  if (!result) {
+    return { type: 'PRODUCT_NOT_FOUND', message: 'Product not found' };
+  }
 
   return { type: null, message: result };
 };
@@ -35,6 +37,14 @@ const update = async (name, id) => {
 
   const affectedRows = await productsModel.update(name, id);
 
+  if (affectedRows === 0) { return { type: 'PRODUCT_NOT_FOUND', message: 'Product not found' }; }
+
+  return { type: null, message: '' };
+};
+
+const destroy = async (id) => {
+  const affectedRows = await productsModel.destroy(id);
+
   if (affectedRows === 0) return { type: 'PRODUCT_NOT_FOUND', message: 'Product not found' };
 
   return { type: null, message: '' };
@@ -45,4 +55,5 @@ module.exports = {
   getById,
   insert,
   update,
+  destroy,
 };

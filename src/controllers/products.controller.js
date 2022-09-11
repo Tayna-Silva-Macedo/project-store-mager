@@ -39,9 +39,22 @@ const update = async (req, res) => {
   return res.status(200).json({ id, name });
 };
 
+const destroy = async (req, res) => {
+  const { id } = req.params;
+
+  console.log(id);
+
+  const { type, message } = await productsService.destroy(id);
+
+  if (type) return res.status(404).json({ message });
+
+  return res.status(204).end();
+};
+
 module.exports = {
   getAll,
   getById,
   insert,
   update,
+  destroy,
 };

@@ -5,6 +5,7 @@ const { salesModel, productsModel } = require("../../../src/models");
 const { salesService } = require("../../../src/services");
 
 const { returnSucessGet, returnSucessGetById } = require("../mocks/sales.mock");
+const { correctReturnProducts } = require("../mocks/products.mock");
 
 describe("Testes de unidade da camada service de vendas", function () {
   describe("Testando rota POST", function () {
@@ -68,7 +69,7 @@ describe("Testes de unidade da camada service de vendas", function () {
 
     it("Testa se é possível cadastrar uma venda com sucesso", async function () {
       sinon.stub(salesModel, "insertSalesProducts").returns(7);
-      sinon.stub(productsModel, "getById").returns(2);
+      sinon.stub(productsModel, "getById").returns(correctReturnProducts);
 
       const result = await salesService.insert([
         {
@@ -137,6 +138,124 @@ describe("Testes de unidade da camada service de vendas", function () {
       sinon.stub(salesModel, "destroy").returns(1);
 
       const result = await salesService.destroy(1);
+
+      expect(result).to.be.deep.equal({ type: null, message: "" });
+    });
+  });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível alterar uma venda que não existe", async function () {
+      sinon.stub(salesModel, "getById").returns([]);
+
+      const result = await salesService.update(
+        [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+        99
+      );
+
+      expect(result).to.be.deep.equal({
+        type: "SALE_NOT_FOUND",
+        message: "Sale not found",
+      });
+    });
+
+    it("Testa se não é possível alterar uma venda com quantidade igual a 0", async function () {
+      sinon.stub(salesModel, "getById").returns(returnSucessGetById);
+
+      const result = await salesService.update(
+        [
+          {
+            productId: 1,
+            quantity: 0,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+        1
+      );
+
+      expect(result).to.be.deep.equal({
+        type: "INVALID_VALUE",
+        message: '"quantity" must be greater than or equal to 1',
+      });
+    });
+
+    it("Testa se não é possível alterar uma venda com quantidade menor que 0", async function () {
+      sinon.stub(salesModel, "getById").returns(returnSucessGetById);
+
+      const result = await salesService.update(
+        [
+          {
+            productId: 1,
+            quantity: 5,
+          },
+          {
+            productId: 2,
+            quantity: -1,
+          },
+        ],
+        1
+      );
+
+      expect(result).to.be.deep.equal({
+        type: "INVALID_VALUE",
+        message: '"quantity" must be greater than or equal to 1',
+      });
+    });
+
+    it("Testa se não é possível alterar uma venda com um productId inexistente", async function () {
+      sinon.stub(salesModel, "getById").returns(returnSucessGetById);
+      sinon.stub(productsModel, "getById").returns(undefined);
+
+      const result = await salesService.update(
+        [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 99,
+            quantity: 50,
+          },
+        ],
+        1
+      );
+
+      expect(result).to.be.deep.equal({
+        type: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
+    });
+
+    it("Testa se é possível alterar uma venda com sucesso", async function () {
+      sinon.stub(salesModel, "getById").returns(returnSucessGetById);
+      sinon.stub(productsModel, "getById").returns(correctReturnProducts[0]);
+
+      const result = await salesService.update(
+        [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+        1
+      );
 
       expect(result).to.be.deep.equal({ type: null, message: "" });
     });

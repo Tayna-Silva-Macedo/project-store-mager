@@ -11,6 +11,7 @@ const {
   returnSucessPost,
   returnSucessGet,
   returnSucessGetById,
+  returnSucessUpdate,
 } = require("../mocks/sales.mock");
 
 const { expect } = chai;
@@ -238,6 +239,169 @@ describe("Testes de unidade da camada controller de vendas", function () {
       await salesController.destroy(req, res);
 
       expect(res.status).to.have.been.calledWith(204);
+    });
+  });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se não é possível alterar uma venda que não existe", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 99,
+        },
+        body: [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(salesService, "update")
+        .resolves({ type: "SALE_NOT_FOUND", message: "Sale not found" });
+
+      await salesController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(404);
+      expect(res.json).to.have.been.calledWith({ message: "Sale not found" });
+    });
+
+    it("Testa se não é possível alterar uma venda com quantidade igual a 0", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: [
+          {
+            productId: 1,
+            quantity: 0,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(salesService, "update").resolves({
+        type: "INVALID_VALUE",
+        message: '"quantity" must be greater than or equal to 1',
+      });
+
+      await salesController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(422);
+      expect(res.json).to.have.been.calledWith(returnInvalidQuantity);
+    });
+
+    it("Testa se não é possível alterar uma venda com quantidade menor que 0", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: -1,
+          },
+        ],
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(salesService, "update").resolves({
+        type: "INVALID_VALUE",
+        message: '"quantity" must be greater than or equal to 1',
+      });
+
+      await salesController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(422);
+      expect(res.json).to.have.been.calledWith(returnInvalidQuantity);
+    });
+
+    it("Testa se não é possível alterar uma venda com um productId inexistente", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: [
+          {
+            productId: 99,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(salesService, "update").resolves({
+        type: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
+
+      await salesController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(404);
+      expect(res.json).to.have.been.calledWith(returnInvalidProductId);
+    });
+
+    it("Testa se é possível alterar uma venda com sucesso", async function () {
+      const res = {};
+      const req = {
+        params: {
+          id: 1,
+        },
+        body: [
+          {
+            productId: 1,
+            quantity: 10,
+          },
+          {
+            productId: 2,
+            quantity: 50,
+          },
+        ],
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(salesService, "update").resolves({
+        type: null,
+        message: "",
+      });
+
+      await salesController.update(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(returnSucessUpdate);
     });
   });
 });

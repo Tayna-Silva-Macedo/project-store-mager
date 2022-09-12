@@ -75,4 +75,25 @@ describe("Testes de unidade da camada model de vendas", function () {
       expect(result).to.be.equal(1);
     });
   });
+
+  describe("Testando rota PUT", function () {
+    afterEach(sinon.restore);
+
+    it("Testa se é possível alterar uma venda com sucesso", async function () {
+      sinon.stub(connection, "execute").resolves();
+
+      const result = await salesModel.update([
+        {
+          productId: 1,
+          quantity: 10,
+        },
+        {
+          productId: 2,
+          quantity: 50,
+        },
+      ], 1);
+
+      expect(result).to.be.equal(true);
+    });
+  });
 });

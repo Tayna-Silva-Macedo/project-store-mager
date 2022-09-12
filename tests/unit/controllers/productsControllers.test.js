@@ -76,6 +76,46 @@ describe("Testes de unidade da camada controller de produtos", function () {
         message: "Product not found",
       });
     });
+
+    it("Testa se é possível listar produtos pelo seu nome", async function () {
+      const res = {};
+      const req = {
+        query: {
+          q: "Martelo",
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon
+        .stub(productsService, "getByName")
+        .resolves(correctReturnProducts[0]);
+
+      await productsController.getByName(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(correctReturnProducts[0]);
+    });
+
+    it("Testa se é retornado todos os produtos caso a busca esteja vazia", async function () {
+      const res = {};
+      const req = {
+        query: {
+          q: "",
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      sinon.stub(productsService, "getByName").resolves(correctReturnProducts);
+
+      await productsController.getByName(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(correctReturnProducts);
+    });
   });
 
   describe("Testando rota POST", function () {

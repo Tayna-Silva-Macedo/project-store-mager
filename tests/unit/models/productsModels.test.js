@@ -33,6 +33,22 @@ describe("Testes de unidade da camada model de produtos", function () {
 
       expect(result).to.be.equal(undefined);
     });
+
+    it("Testa se é possível listar produtos pelo seu nome", async function () {
+      sinon.stub(connection, "execute").resolves([correctReturnProducts[0]]);
+
+      const result = await productsModel.getByName("Martelo");
+
+      expect(result).to.be.deep.equal(correctReturnProducts[0]);
+    });
+
+    it("Testa se é retornado todos os produtos caso a busca esteja vazia", async function () {
+      sinon.stub(connection, "execute").resolves([correctReturnProducts]);
+
+      const result = await productsModel.getByName("");
+
+      expect(result).to.be.equal(correctReturnProducts);
+    });
   });
 
   describe("Testando rota POST", function () {

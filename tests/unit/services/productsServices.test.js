@@ -43,6 +43,22 @@ describe("Testes de unidade da camada service de produtos", function () {
         message: "Product not found",
       });
     });
+
+    it("Testa se é possível listar produtos pelo seu nome", async function () {
+      sinon.stub(productsModel, "getByName").resolves(correctReturnProducts[0]);
+
+      const result = await productsService.getByName("Martelo");
+
+      expect(result).to.be.deep.equal(correctReturnProducts[0]);
+    });
+
+    it("Testa se é retornado todos os produtos caso a busca esteja vazia", async function () {
+      sinon.stub(productsModel, "getByName").resolves(correctReturnProducts);
+
+      const result = await productsService.getByName("");
+
+      expect(result).to.be.deep.equal(correctReturnProducts);
+    });
   });
 
   describe("Testando rota POST", function () {

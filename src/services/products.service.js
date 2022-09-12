@@ -50,10 +50,17 @@ const destroy = async (id) => {
   return { type: null, message: '' };
 };
 
+const getByName = async (q) => {
+  const result = await productsModel.getByName(q);
+
+  return result;
+};
+
 module.exports = {
   getAll,
   getById,
   insert,
   update,
   destroy,
+  getByName,
 };

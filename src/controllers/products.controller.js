@@ -49,10 +49,19 @@ const destroy = async (req, res) => {
   return res.status(204).end();
 };
 
+const getByName = async (req, res) => {
+  const { q } = req.query;
+
+  const result = await productsService.getByName(q);
+
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getAll,
   getById,
   insert,
   update,
   destroy,
+  getByName,
 };

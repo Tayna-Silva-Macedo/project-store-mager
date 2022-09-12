@@ -44,10 +44,20 @@ const destroy = async (id) => {
   return affectedRows;
 };
 
+const getByName = async (q) => {
+  const [result] = await connection.execute(
+    'SELECT * FROM StoreManager.products WHERE name LIKE ?',
+    [`%${q}%`],
+  );
+
+  return result;
+};
+
 module.exports = {
   getAll,
   getById,
   insert,
   update,
   destroy,
+  getByName,
 };

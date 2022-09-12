@@ -55,9 +55,23 @@ const destroy = async (id) => {
   return affectedRows;
 };
 
+const update = async (sales, id) => {
+  sales.forEach(async (sale) => {
+    await connection.execute(
+      `UPDATE StoreManager.sales_products
+        SET quantity = ?
+        WHERE product_id = ? AND sale_id = ?`,
+      [sale.quantity, sale.productId, id],
+    );
+  });
+
+  return true;
+};
+
 module.exports = {
   insertSalesProducts,
   getAll,
   getById,
   destroy,
+  update,
 };

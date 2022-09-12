@@ -38,9 +38,25 @@ const destroy = async (req, res) => {
   return res.status(204).end();
 };
 
+const update = async (req, res) => {
+  const { id } = req.params;
+  const sales = req.body;
+
+  const { type, message } = await salesService.update(sales, id);
+
+  if (type === 'SALE_NOT_FOUND') return res.status(404).json({ message });
+
+  if (type === 'INVALID_VALUE') return res.status(422).json({ message });
+
+  if (type === 'PRODUCT_NOT_FOUND') return res.status(404).json({ message });
+
+  return res.status(200).json({ saleId: id, itemsUpdated: sales });
+};
+
 module.exports = {
   insert,
   getAll,
   getById,
   destroy,
+  update,
 };

@@ -35,9 +35,7 @@ const getById = async (id) => {
 const destroy = async (id) => {
   const affectedRows = await salesModel.destroy(id);
 
-  if (affectedRows === 0) {
-    return { type: 'SALE_NOT_FOUND', message: 'Sale not found' };
-  }
+  if (affectedRows === 0) return { type: 'SALE_NOT_FOUND', message: 'Sale not found' };
 
   return { type: null, message: '' };
 };
